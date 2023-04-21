@@ -6,16 +6,16 @@ load_dotenv()
 KEY = os.getenv("KEY")
 
 def get_help():
-	return """Use PREFIX '$'' for chat in public, PREFIX '?' for private
+	return """Dùng tiền tố '$' để chat công khai,  '?' để chat cá nhân
 
-            `$help` : As you can see.
+            `$help` : Như bạn có thể thấy.
 
-            `$roll` : Random 1 to 6.
+            `$roll` : Một con số ngẫu nhiên từ 1 -> 6.
 
-            `$feedback` <content>: send you feedback, repost, comment, etc...
+            `$feedback` <Nội dung>: Gửi phản hồi, bình luận, ... của bạn về bot chat.
 
-            `$quote` <category | optional>: Ramdom quote about <category>. 
-            Category used to limit results. Possible values are:
+            `$quote` <category | optional>: Trích dẫn ngẫu nhiên. 
+            Có thể chọn trích dẫn thuộc các nhãn sau:
             age, alone, amazing, anger, architecture, art, attitude, beauty, 
             best, birthday, business, car, change, communications, computers, 
             cool, courage, dad, dating, death, design, dreams, education, 
@@ -26,14 +26,18 @@ def get_help():
             intelligence, jealousy, knowledge, leadership, learning, legal, life, 
             love, marriage, medical, men, mom, money, morning, movies, success.
 
-            `$fact` : Random a fact.
+            `$fact` : Một sự thật ngẫu nhiên.
 
-            `$facts` <n> : Random n facts (1<n<30).
+            `$facts` <n> : n sự thật ngẫu nhiên (1<n<30).
 
-            `$air` <city | required>: Information about air quality.
-            (keyword: Hanoi, Ho Chi Minh City, Danang, ...)
-            `$weather` <city>: Information about weather in city
-        In future:
+            `$air` <city | required>: Thông tin về chất lượng không khí tại thành phố (tên tiếng anh).
+            (Một vài từ khóa thành phố: Hanoi, Ho Chi Minh City, Danang, ...)
+
+            `$weather` <city>: Thông tin về thời tiết tại thành phố (tên tiếng anh)
+            (Một vài từ khóa thành phố: Hanoi, Ho Chi Minh City, Danang, ...)
+            
+        Trong tương lai:
+        	`$decide` : Giống quyển sách "Vị thần của những quyết định"
             """
 
 def save_feedback(username, p_message):
