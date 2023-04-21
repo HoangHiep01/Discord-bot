@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 async def send_message(message, username, user_message, is_private):
     try:
         response = responses.handle_response(username, user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
+        await message.author.send(response) if is_private else await message.reply(response)
 
     except Exception as e:
         print("RES: ", response)

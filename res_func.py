@@ -5,6 +5,37 @@ from dotenv import load_dotenv
 load_dotenv()
 KEY = os.getenv("KEY")
 
+def get_help():
+	return """Use PREFIX '$'' for chat in public, PREFIX '?' for private
+
+            `$help` : As you can see.
+
+            `$roll` : Random 1 to 6.
+
+            `$feedback` <content>: send you feedback, repost, comment, etc...
+
+            `$quote` <category | optional>: Ramdom quote about <category>. 
+            Category used to limit results. Possible values are:
+            age, alone, amazing, anger, architecture, art, attitude, beauty, 
+            best, birthday, business, car, change, communications, computers, 
+            cool, courage, dad, dating, death, design, dreams, education, 
+            environmental, equality, experience, failure, faith, family, 
+            famous, fear, fitness, food, forgiveness, freedom, friendship, 
+            funny, future, god, good, government, graduation, great, happiness, 
+            health, history, home, hope, humor, imagination, inspirational, 
+            intelligence, jealousy, knowledge, leadership, learning, legal, life, 
+            love, marriage, medical, men, mom, money, morning, movies, success.
+
+            `$fact` : Random a fact.
+
+            `$facts` <n> : Random n facts (1<n<30).
+
+            `$air` <city | required>: Information about air quality.
+            (keyword: Hanoi, Ho Chi Minh City, Danang, ...)
+            `$weather` <city>: Information about weather in city
+        In future:
+            """
+
 def save_feedback(username, p_message):
 	filename = username.replace("#", "_")
 	path = f"feedback\\{filename}.txt"
@@ -33,24 +64,40 @@ def get_random_quote(category = None):
 	except:
 		return "Something went wrong! Try Again! - Your code and mine said"
 
+def convert_time(unix_timestamp):
+    return datetime.fromtimestamp(unix_timestamp, timezone.utc).strftime('%d-%m-%Y %H:%M:%S')
+
+
 ## function that gets the weather
 # Got some bugs
 def get_weather(city = "Hanoi"):
 
-    WEATHER_URL = f'https://apihttps://api.api-ninjas.com/v1/weather?city={city}'
+    wind_direction = ["Gió Bắc","Gió Đông Bắc lệch Bắc","Gió Đông Bắc","Gió Đông Bắc lệch Đông",
+    "Đông", "Gió Đông Nam lệch Đông", "Gió Đông Nam", "Gió Đông Nam lệch Nam",
+    "Gió Nam", "Gió Tây Nam lệch Nam", "Gió Tây Nam", "Gió Tây Nam lệch Tây",
+    "Gió Tây", "Gió Tây Bắc lệch Tây", "Gió Bắc Tây", "Gió Bắc Tây lệch Bắc"]
+
+    WEATHER_URL = f'https://api.api-ninjas.com/v1/weather?city={city}'
 
     try:
         response = requests.get(WEATHER_URL, headers={'X-Api-Key': KEY})
         if response.status_code == requests.codes.ok:
             data = response.json()
-            return f"""Tốc độ gió: {data[0]["wind_speed"]}
-            Nhiệt độ gió: {data[0]["wind_speed"]}
-            Nhiệt độ: {data[0]["wind_speed"]}
-            Độ ẩm: {data[0]["wind_speed"]}
-            """
+            return f"""Nhiệt độ: {data["temp"]}°C
+Nhiệt độ cao nhất: {data["max_temp"]}°C
+Nhiệt độ thấp nhất: {data["min_temp"]}°C
+Cảm giác: {data["feels_like"]}°C
+Độ ẩm: {data["humidity"]}%
+Hướng gió: {data["wind_degrees"]}° - {wind_direction[round(int(data["wind_degrees"])/22.5)]}
+Tốc độ gió: {data["wind_speed"]} m/s
+Tỉ lệ mây che phủ: {data["cloud_pct"]}%
+"""
+# Mặt trời mọc: {convert_time(int(data["sunrise"]))}
+# Mặt trời lặn: {convert_time(int(data["sunset"]))}
         else:
-            return f"Error - {response.status_code} - {response.text}.\n Yeah! It's touch grass's time."
-    except:
+            return f"Error - {response.status_code} - {response.text}.\nYeah! It's touch grass's time."
+    except Exception as e:
+        print(e)
         return "Stand up and look out the window. You will see what ever you want, but my boss see some bugs"
 
 ## function that gets the fact
@@ -75,3 +122,27 @@ def get_fact(limit = 1):
 		return """Bạn có biết: Khi lập trình mà gặp lỗi là một điều bình thường.
 		Đây thông báo khi code của tôi gặp lỗi. 
 		Xin cảm ơn!"""
+
+def get_air_quality(city = "Hanoi"):
+
+    city = city.lower()
+    API_URL = f'https://api.api-ninjas.com/v1/airquality?city={city}'
+
+    try:
+        response = requests.get(API_URL, headers={'X-Api-Key': KEY})
+
+        if response.status_code == requests.codes.ok:
+            data = response.json()
+            return f"""CO: {data["CO"]["concentration"]}(μg/m3) - {data["CO"]["aqi"]}(aqi)
+NO2: {data["NO2"]["concentration"]}(μg/m3) - {data["NO2"]["aqi"]}(aqi)
+O3: {data["O3"]["concentration"]}(μg/m3) - {data["O3"]["aqi"]}(aqi)
+SO2: {data["SO2"]["concentration"]}(μg/m3) - {data["SO2"]["aqi"]}(aqi)
+PM2.5: {data["PM2.5"]["concentration"]}(μg/m3) - {data["PM2.5"]["aqi"]}(aqi)
+PM10: {data["PM10"]["concentration"]}(μg/m3) - {data["PM10"]["aqi"]}(aqi)
+Overall: {data["overall_aqi"]}"""
+        else:
+            code = response.status_code
+            text = response.text
+            return f"{code} - {text}"
+    except Exception as e:
+        return f"Unexpected: {e}"
