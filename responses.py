@@ -1,5 +1,5 @@
 import random
-from res_func import *
+from response.res_func import *
 from response.NinjasAPI import *
 
 API = NinjasAPI()
