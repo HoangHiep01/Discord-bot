@@ -40,9 +40,22 @@ def get_help():
         	`$decide` : Giống quyển sách "Vị thần của những quyết định"
             """
 
+def get_dir_size_old(path='.'):
+	total = 0
+	for p in os.listdir(path):
+		full_path = os.path.join(path, p)
+		if os.path.isfile(full_path):
+			total += os.path.getsize(full_path)
+		elif os.path.isdir(full_path):
+			total += get_dir_size_old(full_path)
+	return total
+
 def save_feedback(username, p_message):
-	filename = username.replace("#", "_")
-	path = f"feedback\\{filename}.txt"
-	with open(file = path, mode = "a", encoding = 'utf-8') as f:
-		f.write(p_message[9:] + '\n')
-	return "Thank bro"
+	# 2*30 bytes = 1GB
+	if get_dir_size_old(os.getcwd().replace("response", "feedback")) < 2**30:
+		filename = username.replace("#", "_")
+		path = f"feedback\\{filename}.txt"
+		with open(file = path, mode = "a", encoding = 'utf-8') as f:
+			f.write(p_message[9:] + '\n')
+		return "Thank bro"
+	return "Thank bro! Nhưng hệ thống quá tải"
